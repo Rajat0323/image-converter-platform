@@ -18,7 +18,9 @@ export default function ImageUpload() {
       const formData = new FormData();
       formData.append("image", file);
 
-      const API_URL = process.env.NEXT_PUBLIC_API_URL;
+      const API_URL =
+  "https://image-converter-platform.netlify.app/.netlify/functions";
+;
 
       if (!API_URL) {
         setError("API URL not configured");

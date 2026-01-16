@@ -1,64 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 
-export default function ImageUpload() {
+const ImageUpload: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
 
-  async function handleConvert() {
-    if (!file) return;
+  const handleConvert = async () => {
+    if (!file) {
+      setError("Please select a PNG file first");
+      return;
+    }
 
-    setLoading(true);
-    setError(null);
-
-    const formData = new FormData();
-    formData.append("image", file);
+    setError("");
 
     try {
-      const res = await fetch("http://localhost:4000/api/png-to-jpg", {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // 🔥 BACKEND API URL (Netlify Function or backend URL)
+      const API_URL =
+        process.env.NEXT_PUBLIC_API_URL ||
+        "https://image-converter-platform.netlify.app/.netlify/functions/png-to-jpg";
+
+      const response = await fetch(API_URL, {
         method: "POST",
         body: formData,
       });
 
-      const data = await res.json();
+      if (!response.ok) {
+        throw new Error("Conversion failed");
+      }
 
-      if (!res.ok) throw new Error(data.error || "Conversion failed");
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
 
-      setDownloadUrl(`http://localhost:4000${data.file}`);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "converted.jpg";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError("Failed to fetch");
     }
-  }
+  };
 
   return (
-    <div style={{ marginTop: "30px" }}>
+    <div>
       <input
         type="file"
         accept="image/png"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+          setFile(e.target.files?.[0] || null)
+        }
       />
 
       <br />
       <br />
 
-      <button onClick={handleConvert} disabled={loading}>
-        {loading ? "Converting..." : "Convert to JPG"}
-      </button>
-
-      {downloadUrl && (
-        <p>
-          <a href={downloadUrl} target="_blank">
-            Download JPG
-          </a>
-        </p>
-      )}
+      <button onClick={handleConvert}>Convert to JPG</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
-}
+};
+
+export default ImageUpload;

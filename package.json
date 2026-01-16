@@ -1,0 +1,13 @@
+{
+  "name": "image-converter-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Image converter platform using Next.js frontend and Netlify Functions backend",
+  "scripts": {
+    "dev": "echo \"Root project – use frontend or backend scripts\""
+  },
+  "dependencies": {
+    "sharp": "^0.33.2",
+    "busboy": "^1.6.0"
+  }
+}

@@ -2,60 +2,57 @@ const sharp = require("sharp");
 const Busboy = require("busboy");
 
 exports.handler = async (event) => {
-  // ✅ Handle CORS preflight
+  // ✅ CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
-      headers: corsHeaders(),
+      headers: cors(),
     };
   }
 
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
-      headers: corsHeaders(),
+      headers: cors(),
       body: "Method Not Allowed",
     };
   }
 
-  return new Promise((resolve, reject) => {
-    const headers = event.headers;
-
+  return new Promise((resolve) => {
     const busboy = new Busboy({
       headers: {
-        "content-type": headers["content-type"] || headers["Content-Type"],
+        "content-type":
+          event.headers["content-type"] ||
+          event.headers["Content-Type"],
       },
     });
 
-    let imageBuffer = Buffer.alloc(0);
+    let buffer = Buffer.alloc(0);
 
     busboy.on("file", (_, file) => {
       file.on("data", (data) => {
-        imageBuffer = Buffer.concat([imageBuffer, data]);
+        buffer = Buffer.concat([buffer, data]);
       });
     });
 
     busboy.on("finish", async () => {
       try {
-        const jpgBuffer = await sharp(imageBuffer)
-          .jpeg({ quality: 90 })
-          .toBuffer();
+        const output = await sharp(buffer).jpeg({ quality: 90 }).toBuffer();
 
         resolve({
           statusCode: 200,
           headers: {
-            ...corsHeaders(),
+            ...cors(),
             "Content-Type": "image/jpeg",
-            "Content-Disposition": "attachment; filename=converted.jpg",
           },
-          body: jpgBuffer.toString("base64"),
+          body: output.toString("base64"),
           isBase64Encoded: true,
         });
-      } catch (err) {
+      } catch (e) {
         resolve({
           statusCode: 500,
-          headers: corsHeaders(),
-          body: JSON.stringify({ error: err.message }),
+          headers: cors(),
+          body: e.message,
         });
       }
     });
@@ -64,7 +61,7 @@ exports.handler = async (event) => {
   });
 };
 
-function corsHeaders() {
+function cors() {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Headers": "Content-Type",

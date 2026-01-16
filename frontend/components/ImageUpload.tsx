@@ -1,35 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 
-const ImageUpload: React.FC = () => {
+export default function ImageUpload() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
 
   const handleConvert = async () => {
+    setError("");
+
     if (!file) {
-      setError("Please select a PNG file first");
+      setError("Please select a PNG file");
       return;
     }
 
-    setError("");
-
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("image", file);
 
-      // 🔥 BACKEND API URL (Netlify Function or backend URL)
-      const API_URL =
-        process.env.NEXT_PUBLIC_API_URL ||
-        "https://image-converter-platform.netlify.app/.netlify/functions/png-to-jpg";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-      const response = await fetch(API_URL, {
+      if (!API_URL) {
+        setError("API URL not configured");
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/png-to-jpg`, {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Conversion failed");
+        throw new Error("API request failed");
       }
 
       const blob = await response.blob();
@@ -44,28 +46,31 @@ const ImageUpload: React.FC = () => {
 
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      setError("Failed to fetch");
+      console.error(err);
+      setError("Failed to convert image");
     }
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <input
         type="file"
         accept="image/png"
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setFile(e.target.files?.[0] || null)
-        }
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
       />
 
       <br />
       <br />
 
-      <button onClick={handleConvert}>Convert to JPG</button>
+      <button onClick={handleConvert}>
+        Convert to JPG
+      </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && (
+        <p style={{ color: "red", marginTop: "10px" }}>
+          {error}
+        </p>
+      )}
     </div>
   );
-};
-
-export default ImageUpload;
+}

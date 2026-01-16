@@ -5,18 +5,70 @@ const path = require("path");
 const convertRoutes = require("./routes/convert");
 
 const app = express();
-const PORT = 4000;
 
-app.use(cors());
+/**
+ * =========================
+ * CORS CONFIGURATION
+ * =========================
+ * For MVP: allow all origins
+ * (We will restrict this later)
+ */
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+  })
+);
+
+/**
+ * =========================
+ * MIDDLEWARES
+ * =========================
+ */
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+/**
+ * =========================
+ * API ROUTES
+ * =========================
+ */
 app.use("/api", convertRoutes);
-app.use("/download", express.static(path.join(__dirname, "../output")));
 
+/**
+ * =========================
+ * HEALTH CHECK
+ * =========================
+ */
 app.get("/health", (req, res) => {
-  res.json({ status: "OK" });
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date(),
+  });
 });
 
+/**
+ * =========================
+ * GLOBAL ERROR HANDLER
+ * =========================
+ */
+app.use((err, req, res, next) => {
+  console.error("❌ Server Error:", err);
+
+  res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+});
+
+/**
+ * =========================
+ * SERVER START
+ * =========================
+ */
+const PORT = process.env.PORT || 4000;
+
 app.listen(PORT, () => {
-  console.log(`Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Backend server running on port ${PORT}`);
 });

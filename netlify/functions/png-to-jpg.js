@@ -2,7 +2,7 @@ const sharp = require("sharp");
 const Busboy = require("busboy");
 
 exports.handler = async (event) => {
-  // ✅ CORS preflight
+  // Allow browser preflight
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -29,15 +29,33 @@ exports.handler = async (event) => {
 
     let buffer = Buffer.alloc(0);
 
-    busboy.on("file", (_, file) => {
+    busboy.on("file", (fieldname, file) => {
+      // ✅ ONLY accept field name "image"
+      if (fieldname !== "image") {
+        file.resume();
+        return;
+      }
+
       file.on("data", (data) => {
         buffer = Buffer.concat([buffer, data]);
       });
     });
 
     busboy.on("finish", async () => {
+      // ❌ No file received
+      if (!buffer.length) {
+        resolve({
+          statusCode: 400,
+          headers: cors(),
+          body: "No image uploaded",
+        });
+        return;
+      }
+
       try {
-        const output = await sharp(buffer).jpeg({ quality: 90 }).toBuffer();
+        const output = await sharp(buffer)
+          .jpeg({ quality: 90 })
+          .toBuffer();
 
         resolve({
           statusCode: 200,
@@ -48,11 +66,11 @@ exports.handler = async (event) => {
           body: output.toString("base64"),
           isBase64Encoded: true,
         });
-      } catch (e) {
+      } catch (err) {
         resolve({
           statusCode: 500,
           headers: cors(),
-          body: e.message,
+          body: err.message,
         });
       }
     });

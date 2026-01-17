@@ -1,11 +1,11 @@
+import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import ThemeProvider from "@/components/ThemeProvider";
+import Analytics from "@/components/Analytics";
 
-export const metadata = {
-  title: "Image Converter Platform",
-  description: "Convert PNG, JPG, WEBP images online for free",
+export const metadata: Metadata = {
+  title: "Image Format Converter – PNG, JPG, WEBP Online Free",
+  description:
+    "Free online image format converter. Convert PNG to JPG, JPG to PNG, PNG to WEBP, JPG to WEBP and WEBP to JPG instantly. Fast, secure and mobile friendly.",
 };
 
 export default function RootLayout({
@@ -14,15 +14,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col bg-background text-foreground">
-        <ThemeProvider>
-          <Navbar />
-          <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6">
-            {children}
-          </main>
-          <Footer />
-        </ThemeProvider>
+    <html lang="en">
+      <head />
+      <body>
+        {/* Google Analytics */}
+        <Analytics />
+
+        {/* App Content */}
+        {children}
       </body>
     </html>
   );

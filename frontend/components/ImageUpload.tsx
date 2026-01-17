@@ -4,36 +4,27 @@ import { useState } from "react";
 
 export default function ImageUpload() {
   const [file, setFile] = useState<File | null>(null);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
 
   const handleConvert = async () => {
-    setError("");
-
     if (!file) {
-      setError("Please select a PNG file");
+      setError("Please select a PNG image");
       return;
     }
 
     try {
+      setError("");
+
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("image", file); // MUST be "image"
 
-      const API_URL =
-  "https://image-converter-platform.netlify.app/.netlify/functions";
-;
-
-      if (!API_URL) {
-        setError("API URL not configured");
-        return;
-      }
-
-      const response = await fetch(`${API_URL}/png-to-jpg`, {
+      const response = await fetch("/api/png-to-jpg", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("API request failed");
+        throw new Error("Conversion failed");
       }
 
       const blob = await response.blob();
@@ -45,34 +36,22 @@ export default function ImageUpload() {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-
-      window.URL.revokeObjectURL(url);
     } catch (err) {
-      console.error(err);
       setError("Failed to convert image");
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div>
       <input
         type="file"
         accept="image/png"
         onChange={(e) => setFile(e.target.files?.[0] || null)}
       />
 
-      <br />
-      <br />
+      <button onClick={handleConvert}>Convert to JPG</button>
 
-      <button onClick={handleConvert}>
-        Convert to JPG
-      </button>
-
-      {error && (
-        <p style={{ color: "red", marginTop: "10px" }}>
-          {error}
-        </p>
-      )}
+      {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );
 }

@@ -8,15 +8,15 @@ export default function ImageUpload() {
 
   const handleConvert = async () => {
     if (!file) {
-      setError("Please select a PNG image");
+      setError("Please select a PNG file");
       return;
     }
 
-    try {
-      setError("");
+    setError("");
 
+    try {
       const formData = new FormData();
-      formData.append("image", file); // MUST be "image"
+      formData.append("file", file);
 
       const response = await fetch("/api/png-to-jpg", {
         method: "POST",
@@ -36,18 +36,24 @@ export default function ImageUpload() {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
-    } catch (err) {
+      window.URL.revokeObjectURL(url);
+    } catch (e) {
       setError("Failed to convert image");
     }
   };
 
   return (
     <div>
+      <h1>Convert PNG to JPG Online</h1>
+      <p>Upload a PNG image and convert it into JPG format instantly.</p>
+
       <input
         type="file"
         accept="image/png"
         onChange={(e) => setFile(e.target.files?.[0] || null)}
       />
+
+      <br /><br />
 
       <button onClick={handleConvert}>Convert to JPG</button>
 

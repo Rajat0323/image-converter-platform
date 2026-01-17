@@ -1,34 +1,34 @@
+export const runtime = "nodejs";
+
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("image") as File;
+    const file = formData.get("file") as File;
 
     if (!file) {
       return NextResponse.json(
-        { error: "No image uploaded" },
+        { error: "No file uploaded" },
         { status: 400 }
       );
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
 
-    const jpgBuffer = await sharp(buffer)
-      .jpeg({ quality: 90 })
-      .toBuffer();
+    const jpgBuffer = await sharp(buffer).jpeg().toBuffer();
 
     return new NextResponse(jpgBuffer, {
-      status: 200,
       headers: {
         "Content-Type": "image/jpeg",
         "Content-Disposition": "attachment; filename=converted.jpg",
       },
     });
-  } catch (err: any) {
+  } catch (error) {
     return NextResponse.json(
-      { error: err.message },
+      { error: "Failed to convert image" },
       { status: 500 }
     );
   }

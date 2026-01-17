@@ -1,5 +1,13 @@
 import Link from "next/link";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Image Format Converter – PNG, JPG, WEBP Online Free",
+  description:
+    "Free online image format converter. Convert PNG to JPG, JPG to PNG, PNG to WEBP, JPG to WEBP and WEBP to JPG instantly. No upload limits, secure & fast.",
+};
+
 const tools = [
   {
     title: "PNG to WEBP",

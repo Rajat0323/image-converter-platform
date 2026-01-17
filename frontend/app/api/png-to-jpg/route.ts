@@ -1,7 +1,7 @@
 export const runtime = "nodejs";
 
-import { NextResponse } from "next/server";
 import sharp from "sharp";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -15,32 +15,24 @@ export async function POST(req: Request) {
       );
     }
 
-    if (file.type !== "image/png") {
-      return NextResponse.json(
-        { error: "Only PNG files are allowed" },
-        { status: 400 }
-      );
-    }
-
-    // File → Buffer
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // PNG → JPG
-    const jpgBuffer = await sharp(buffer)
-      .jpeg({ quality: 90 })
+    // 🔁 convert using sharp
+    const outputBuffer = await sharp(buffer)
+      .png() // or jpeg(), webp()
       .toBuffer();
 
-    // ✅ FIX: Buffer → Uint8Array
-    return new Response(new Uint8Array(jpgBuffer), {
+    // ✅ ALWAYS return Uint8Array
+    return new Response(new Uint8Array(outputBuffer), {
       headers: {
-        "Content-Type": "image/jpeg",
+        "Content-Type": "image/png",
         "Content-Disposition":
-          'attachment; filename="converted.jpg"',
+          'attachment; filename="converted.png"',
       },
     });
   } catch (error) {
-    console.error("PNG to JPG error:", error);
+    console.error("Conversion error:", error);
     return NextResponse.json(
       { error: "Conversion failed" },
       { status: 500 }

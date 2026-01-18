@@ -1,6 +1,5 @@
 import "./globals.css";
 import Analytics from "@/components/Analytics";
-import Navbar from "@/components/Navbar";
 
 export default function RootLayout({
   children,
@@ -9,9 +8,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <head />
+      <body className="bg-black text-white">
         <Analytics />
-        <Navbar />
         {children}
       </body>
     </html>

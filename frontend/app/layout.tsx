@@ -1,5 +1,9 @@
 import "./globals.css";
-import Analytics from "@/components/Analytics";
+
+export const metadata = {
+  title: "Image Format Converter",
+  description: "Free online image converter tools",
+};
 
 export default function RootLayout({
   children,
@@ -8,11 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head />
-      <body className="bg-black text-white">
-        <Analytics />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

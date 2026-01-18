@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -23,10 +24,22 @@ export default function Navbar() {
   return (
     <header className="border-b sticky top-0 z-50 bg-white dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-blue-600">
-          ImageConverter
+        
+        {/* LOGO */}
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/logo.png"
+            alt="Image Converter Platform"
+            width={36}
+            height={36}
+            priority
+          />
+          <span className="text-xl font-bold text-blue-600 dark:text-blue-400">
+            ImageConverter
+          </span>
         </Link>
 
+        {/* NAV LINKS + THEME */}
         <div className="flex items-center gap-4">
           <nav className="hidden md:flex space-x-6">
             {links.map((link) => {

@@ -2,6 +2,11 @@ import Link from "next/link";
 
 const tools = [
   {
+    title: "PNG to JPG",
+    description: "Convert PNG images to high-quality JPG format.",
+    href: "/png-to-jpg",
+  },
+  {
     title: "PNG to WEBP",
     description: "Convert PNG images to high-quality WEBP format.",
     href: "/png-to-webp",
@@ -33,13 +38,13 @@ export default function HomePage() {
         </h1>
 
         <p className="mt-6 text-lg text-gray-600">
-          Convert PNG, JPG, and WEBP images instantly.  
+          Convert PNG, JPG, and WEBP images instantly.
           No signup. No limits. 100% free.
         </p>
 
         <div className="mt-8 flex justify-center gap-4">
           <Link
-            href="/png-to-webp"
+            href="/png-to-jpg"
             className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
           >
             Convert Images

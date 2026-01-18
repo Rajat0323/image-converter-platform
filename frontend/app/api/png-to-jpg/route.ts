@@ -1,38 +1,28 @@
-import { NextResponse } from "next/server";
 import sharp from "sharp";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const file = formData.get("file");
+    const file = formData.get("file") as File;
 
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json(
-        { error: "No file uploaded" },
-        { status: 400 }
-      );
+    if (!file) {
+      return NextResponse.json({ error: "No file" }, { status: 400 });
     }
 
-    // Convert File → Buffer
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
+    const bytes = await file.arrayBuffer();
+    const input = Buffer.from(bytes);
 
-    // PNG → JPG
-    const jpgBuffer = await sharp(buffer)
-      .jpeg({ quality: 90 })
-      .toBuffer();
+    const output = await sharp(input).jpeg({ quality: 90 }).toBuffer();
 
-    // ✅ CRITICAL FIX: Buffer → Uint8Array
-    const uint8Array = new Uint8Array(jpgBuffer);
-
-    return new NextResponse(uint8Array, {
+    return new NextResponse(new Uint8Array(output), {
       headers: {
         "Content-Type": "image/jpeg",
         "Content-Disposition": 'attachment; filename="converted.jpg"',
       },
     });
-  } catch (error) {
-    console.error("PNG to JPG error:", error);
+  } catch (err) {
+    console.error(err);
     return NextResponse.json(
       { error: "Conversion failed" },
       { status: 500 }

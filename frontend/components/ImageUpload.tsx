@@ -2,7 +2,25 @@
 
 import { useState } from "react";
 
-export default function ImageUploadBox() {
+/* ============================
+   Props Type Definition
+   ============================ */
+interface ImageUploadBoxProps {
+  title: string;
+  apiEndpoint: string;
+  accept: string;
+  outputFileName: string;
+}
+
+/* ============================
+   Component
+   ============================ */
+export default function ImageUploadBox({
+  title,
+  apiEndpoint,
+  accept,
+  outputFileName,
+}: ImageUploadBoxProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -15,7 +33,7 @@ export default function ImageUploadBox() {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("/api/png-to-jpg", {
+      const res = await fetch(apiEndpoint, {
         method: "POST",
         body: formData,
       });
@@ -29,13 +47,13 @@ export default function ImageUploadBox() {
 
       const a = document.createElement("a");
       a.href = url;
-      a.download = "converted.jpg";
+      a.download = outputFileName;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
 
       URL.revokeObjectURL(url);
-    } catch (err) {
+    } catch (error) {
       alert("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
@@ -44,7 +62,7 @@ export default function ImageUploadBox() {
 
   return (
     <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-8 text-center">
-      <p className="text-lg mb-4">Upload your PNG image</p>
+      <p className="text-lg mb-4">{title}</p>
 
       <label className="block cursor-pointer">
         <div className="border-2 border-dashed border-zinc-600 rounded-lg py-12 hover:border-red-500 transition">
@@ -58,7 +76,7 @@ export default function ImageUploadBox() {
 
         <input
           type="file"
-          accept="image/png"
+          accept={accept}
           hidden
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
@@ -69,7 +87,7 @@ export default function ImageUploadBox() {
         disabled={!file || loading}
         className="mt-6 bg-red-600 hover:bg-red-700 disabled:bg-zinc-600 px-6 py-3 rounded-lg font-semibold w-full"
       >
-        {loading ? "Converting..." : "Convert to JPG"}
+        {loading ? "Converting..." : "Convert"}
       </button>
     </div>
   );

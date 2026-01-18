@@ -30,8 +30,12 @@ export default function ToolCards() {
           href={tool.link}
           className="bg-zinc-900 border border-zinc-700 rounded-xl p-6 hover:border-red-500 transition"
         >
-          <h3 className="text-lg font-semibold">{tool.title}</h3>
-          <p className="mt-2 text-sm text-gray-400">{tool.desc}</p>
+          <h3 className="text-lg font-semibold text-white">
+            {tool.title}
+          </h3>
+          <p className="mt-2 text-sm text-gray-400">
+            {tool.desc}
+          </p>
         </a>
       ))}
     </div>

@@ -8,26 +8,38 @@ export default function ImageUploadBox() {
 
   const handleConvert = async () => {
     if (!file) return;
+
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
 
-    const res = await fetch("/api/png-to-jpg", {
-      method: "POST",
-      body: formData,
-    });
+      const res = await fetch("/api/png-to-jpg", {
+        method: "POST",
+        body: formData,
+      });
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
+      if (!res.ok) {
+        throw new Error("Conversion failed");
+      }
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "converted.jpg";
-    a.click();
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
 
-    URL.revokeObjectURL(url);
-    setLoading(false);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "converted.jpg";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -43,6 +55,7 @@ export default function ImageUploadBox() {
             or click to select file
           </p>
         </div>
+
         <input
           type="file"
           accept="image/png"
@@ -54,7 +67,7 @@ export default function ImageUploadBox() {
       <button
         onClick={handleConvert}
         disabled={!file || loading}
-        className="mt-6 bg-red-600 hover:bg-red-700 disabled:bg-zinc-600 px-6 py-3 rounded-lg font-semibold"
+        className="mt-6 bg-red-600 hover:bg-red-700 disabled:bg-zinc-600 px-6 py-3 rounded-lg font-semibold w-full"
       >
         {loading ? "Converting..." : "Convert to JPG"}
       </button>

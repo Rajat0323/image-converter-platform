@@ -6,7 +6,6 @@ export default function PngToJpgClient() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -17,24 +16,15 @@ export default function PngToJpgClient() {
 
   async function convert() {
     if (!file) return;
-
     setLoading(true);
-    setProgress(10);
 
-    const fake = setInterval(() => {
-      setProgress((p) => (p < 90 ? p + 10 : p));
-    }, 300);
-
-    const formData = new FormData();
-    formData.append("file", file);
+    const form = new FormData();
+    form.append("file", file);
 
     const res = await fetch("/api/png-to-jpg", {
       method: "POST",
-      body: formData,
+      body: form,
     });
-
-    clearInterval(fake);
-    setProgress(100);
 
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -48,42 +38,44 @@ export default function PngToJpgClient() {
   }
 
   return (
-    <main className="container">
-      <div className="upload-wrapper">
-        <div className="upload-box">
-          <h1>PNG to JPG Converter</h1>
-          <p>Convert PNG images to JPG instantly with high quality.</p>
+    <section className="flex justify-center">
+      <div className="bg-white rounded-2xl shadow-lg p-10 max-w-xl w-full text-center">
+        <h1 className="text-3xl font-bold mb-6">
+          PNG to JPG Converter
+        </h1>
 
+        <div className="border-2 border-dashed border-gray-300 rounded-xl p-10">
           {!preview && (
             <>
-              <div className="drop-area">
+              <p className="text-gray-600 mb-4">
                 Drag & drop image or click to select
-              </div>
-              <input type="file" accept="image/png" onChange={onFileChange} />
+              </p>
+              <input
+                type="file"
+                accept="image/png"
+                onChange={onFileChange}
+                className="mx-auto"
+              />
             </>
           )}
 
           {preview && (
-            <div className="preview">
-              <img src={preview} alt="Preview" />
-              <p>
-                {file?.name} • {(file!.size / 1024).toFixed(1)} KB
-              </p>
-            </div>
+            <img
+              src={preview}
+              alt="Preview"
+              className="mx-auto rounded-lg max-h-56"
+            />
           )}
-
-          {loading && (
-            <div className="progress">
-              <div style={{ width: `${progress}%` }} />
-              <span>{progress}%</span>
-            </div>
-          )}
-
-          <button disabled={!file || loading} onClick={convert}>
-            {loading ? "Converting..." : "Convert to JPG"}
-          </button>
         </div>
+
+        <button
+          onClick={convert}
+          disabled={!file || loading}
+          className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
+        >
+          {loading ? "Converting..." : "Convert to JPG"}
+        </button>
       </div>
-    </main>
+    </section>
   );
 }

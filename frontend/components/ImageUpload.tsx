@@ -2,84 +2,62 @@
 
 import { useState } from "react";
 
-type Props = {
-  title: string;
-  apiEndpoint: string;
-  accept: string;
-  outputFileName: string;
-};
-
-export default function ImageUpload({
-  title,
-  apiEndpoint,
-  accept,
-  outputFileName,
-}: Props) {
+export default function ImageUploadBox() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  async function handleConvert() {
+  const handleConvert = async () => {
     if (!file) return;
-
     setLoading(true);
-    setError("");
 
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-      const res = await fetch(apiEndpoint, {
-        method: "POST",
-        body: formData,
-      });
+    const res = await fetch("/api/png-to-jpg", {
+      method: "POST",
+      body: formData,
+    });
 
-      if (!res.ok) throw new Error("Failed");
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
 
-      const blob = await res.blob();
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "converted.jpg";
+    a.click();
 
-      // ✅ MOBILE SAFE DOWNLOAD
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = outputFileName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (e) {
-      setError("Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
+    URL.revokeObjectURL(url);
+    setLoading(false);
+  };
 
   return (
-    <div className="max-w-xl mx-auto bg-white text-black rounded-2xl p-6 shadow">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 text-center">
-        {title}
-      </h1>
+    <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-8 text-center">
+      <p className="text-lg mb-4">Upload your PNG image</p>
 
-      <input
-        type="file"
-        accept={accept}
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        className="mb-4 w-full"
-      />
+      <label className="block cursor-pointer">
+        <div className="border-2 border-dashed border-zinc-600 rounded-lg py-12 hover:border-red-500 transition">
+          <p className="text-gray-400">
+            {file ? file.name : "Drag & drop your image here"}
+          </p>
+          <p className="mt-2 text-sm text-gray-500">
+            or click to select file
+          </p>
+        </div>
+        <input
+          type="file"
+          accept="image/png"
+          hidden
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+      </label>
 
       <button
         onClick={handleConvert}
-        disabled={loading}
-        className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold"
+        disabled={!file || loading}
+        className="mt-6 bg-red-600 hover:bg-red-700 disabled:bg-zinc-600 px-6 py-3 rounded-lg font-semibold"
       >
-        {loading ? "Converting..." : "Convert Image"}
+        {loading ? "Converting..." : "Convert to JPG"}
       </button>
-
-      {error && (
-        <p className="text-red-600 mt-3 text-center font-medium">
-          {error}
-        </p>
-      )}
     </div>
   );
 }

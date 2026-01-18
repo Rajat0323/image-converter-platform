@@ -2,45 +2,43 @@
 
 import { useState } from "react";
 
-/* ============================
-   Props Type Definition
-   ============================ */
-interface ImageUploadBoxProps {
+type Props = {
   title: string;
   apiEndpoint: string;
   accept: string;
   outputFileName: string;
-}
+};
 
-/* ============================
-   Component
-   ============================ */
-export default function ImageUploadBox({
+export default function ImageUpload({
   title,
   apiEndpoint,
   accept,
   outputFileName,
-}: ImageUploadBoxProps) {
+}: Props) {
   const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+  const [dragActive, setDragActive] = useState(false);
+
+  const handleFile = (f: File) => {
+    setFile(f);
+    setPreview(URL.createObjectURL(f));
+    setError("");
+    setSuccess(false);
+  };
 
   const handleConvert = async () => {
-    if (!file) return;
+    if (!file) return setError("Please upload an image first.");
 
     setLoading(true);
-
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const fd = new FormData();
+      fd.append("file", file);
 
-      const res = await fetch(apiEndpoint, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        throw new Error("Conversion failed");
-      }
+      const res = await fetch(apiEndpoint, { method: "POST", body: fd });
+      if (!res.ok) throw new Error("Conversion failed");
 
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
@@ -48,47 +46,68 @@ export default function ImageUploadBox({
       const a = document.createElement("a");
       a.href = url;
       a.download = outputFileName;
-      document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
-
       URL.revokeObjectURL(url);
-    } catch (error) {
-      alert("Something went wrong. Please try again.");
+
+      setSuccess(true);
+      setTimeout(() => {
+        setFile(null);
+        setPreview(null);
+        setSuccess(false);
+      }, 2500);
+    } catch {
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-zinc-900 border border-zinc-700 rounded-xl p-8 text-center">
-      <p className="text-lg mb-4">{title}</p>
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-6 sm:p-8 max-w-xl mx-auto">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-2">{title}</h1>
 
-      <label className="block cursor-pointer">
-        <div className="border-2 border-dashed border-zinc-600 rounded-lg py-12 hover:border-red-500 transition">
-          <p className="text-gray-400">
-            {file ? file.name : "Drag & drop your image here"}
-          </p>
-          <p className="mt-2 text-sm text-gray-500">
-            or click to select file
-          </p>
-        </div>
-
+      <label
+        onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+        onDragLeave={() => setDragActive(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragActive(false);
+          if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        }}
+        className={`border-2 border-dashed rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer transition
+          ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300"}
+        `}
+      >
         <input
           type="file"
           accept={accept}
-          hidden
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
+          className="hidden"
+          onChange={(e) => e.target.files && handleFile(e.target.files[0])}
         />
+
+        {!file ? (
+          <>
+            <p>Drag & drop image</p>
+            <p className="text-sm text-gray-400">or tap to select</p>
+          </>
+        ) : (
+          <>
+            <img src={preview!} className="w-32 h-32 object-contain mb-3" />
+            <p className="text-sm">{file.name}</p>
+          </>
+        )}
       </label>
 
       <button
         onClick={handleConvert}
-        disabled={!file || loading}
-        className="mt-6 bg-red-600 hover:bg-red-700 disabled:bg-zinc-600 px-6 py-3 rounded-lg font-semibold w-full"
+        disabled={loading}
+        className="w-full mt-6 bg-blue-600 text-white py-3 rounded-xl font-semibold"
       >
-        {loading ? "Converting..." : "Convert"}
+        {loading ? "Converting..." : "Convert Image"}
       </button>
+
+      {success && <p className="text-green-600 text-sm mt-3 text-center">✅ Downloaded successfully</p>}
+      {error && <p className="text-red-600 text-sm mt-3 text-center">{error}</p>}
     </div>
   );
 }

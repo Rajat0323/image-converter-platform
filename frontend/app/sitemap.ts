@@ -1,38 +1,30 @@
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://imageformatconverter.in";
-
   return [
     {
-      url: `${baseUrl}/`,
+      url: "https://imageformatconverter.in/",
       lastModified: new Date(),
-      priority: 1.0,
     },
     {
-      url: `${baseUrl}/png-to-jpg`,
+      url: "https://imageformatconverter.in/png-to-jpg",
       lastModified: new Date(),
-      priority: 0.9,
     },
     {
-      url: `${baseUrl}/jpg-to-png`,
+      url: "https://imageformatconverter.in/jpg-to-png",
       lastModified: new Date(),
-      priority: 0.9,
     },
     {
-      url: `${baseUrl}/png-to-webp`,
+      url: "https://imageformatconverter.in/png-to-webp",
       lastModified: new Date(),
-      priority: 0.9,
     },
     {
-      url: `${baseUrl}/jpg-to-webp`,
+      url: "https://imageformatconverter.in/jpg-to-webp",
       lastModified: new Date(),
-      priority: 0.9,
     },
     {
-      url: `${baseUrl}/webp-to-jpg`,
+      url: "https://imageformatconverter.in/webp-to-jpg",
       lastModified: new Date(),
-      priority: 0.9,
     },
   ];
 }

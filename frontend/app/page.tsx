@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Free Image Converter Online – PNG, JPG, WEBP Tools",
+  description:
+    "Convert PNG, JPG, and WEBP images online for free. Fast, secure image converter tools with no signup required.",
+};
 
 const tools = [
   {
@@ -47,7 +54,7 @@ export default function HomePage() {
             href="/png-to-jpg"
             className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition"
           >
-            Convert Images
+            Convert PNG to JPG
           </Link>
 
           <Link
@@ -80,39 +87,6 @@ export default function HomePage() {
               </p>
             </Link>
           ))}
-        </div>
-      </section>
-
-      {/* Trust Section */}
-      <section className="text-center max-w-4xl mx-auto">
-        <h3 className="text-2xl font-bold mb-4">
-          Why use ImageConverter?
-        </h3>
-
-        <div className="grid gap-6 sm:grid-cols-3 mt-8">
-          <div>
-            <p className="text-3xl">⚡</p>
-            <h4 className="font-semibold mt-2">Fast</h4>
-            <p className="text-sm text-gray-600">
-              Instant image processing using modern tech.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-3xl">🔒</p>
-            <h4 className="font-semibold mt-2">Secure</h4>
-            <p className="text-sm text-gray-600">
-              Files are processed securely and never stored.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-3xl">💯</p>
-            <h4 className="font-semibold mt-2">Free</h4>
-            <p className="text-sm text-gray-600">
-              No signup. No watermark. No limits.
-            </p>
-          </div>
         </div>
       </section>
     </div>

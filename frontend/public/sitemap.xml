@@ -1,3 +1,28 @@
-<url>
-  <loc>https://imageformatconverter.in/png-to-jpg</loc>
-</url>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://imageformatconverter.in/</loc>
+  </url>
+
+  <url>
+    <loc>https://imageformatconverter.in/png-to-jpg</loc>
+  </url>
+
+  <url>
+    <loc>https://imageformatconverter.in/jpg-to-png</loc>
+  </url>
+
+  <url>
+    <loc>https://imageformatconverter.in/png-to-webp</loc>
+  </url>
+
+  <url>
+    <loc>https://imageformatconverter.in/jpg-to-webp</loc>
+  </url>
+
+  <url>
+    <loc>https://imageformatconverter.in/webp-to-jpg</loc>
+  </url>
+
+</urlset>

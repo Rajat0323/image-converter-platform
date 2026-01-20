@@ -11,6 +11,7 @@ const links = [
   { href: "/jpg-to-webp", label: "JPG → WEBP" },
   { href: "/webp-to-jpg", label: "WEBP → JPG" },
   { href: "/jpg-to-png", label: "JPG → PNG" },
+  { href: "/png-to-jpg", label: "PNG → JPG" }
 ];
 
 export default function Navbar() {

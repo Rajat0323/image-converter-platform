@@ -12,10 +12,15 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.imageformatconverter.in"),
   title: "Image Converter Platform",
   description: "Convert PNG, JPG, WEBP images online for free",
+
+  /* 🔥 IMPORTANT ICON FIX */
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
     shortcut: "/favicon.ico",
-    apple: "/favicon.ico",
+    apple: "/icon.png",
   },
 };
 

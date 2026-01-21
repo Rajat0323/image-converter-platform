@@ -9,6 +9,7 @@ import Script from "next/script";
    Metadata (SEO + Favicon)
    ========================= */
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.imageformatconverter.in"),
   title: "Image Converter Platform",
   description: "Convert PNG, JPG, WEBP images online for free",
   icons: {
@@ -26,9 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* =========================
-            Google Analytics 4
-           ========================= */}
+        {/* Google Analytics */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
           strategy="afterInteractive"
@@ -39,7 +38,6 @@ export default function RootLayout({
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
-              debug_mode: true,
               page_path: window.location.pathname,
             });
           `}
@@ -48,15 +46,10 @@ export default function RootLayout({
 
       <body className="min-h-screen flex flex-col bg-background text-foreground">
         <ThemeProvider>
-          {/* NAVBAR */}
           <Navbar />
-
-          {/* MAIN CONTENT */}
           <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6">
             {children}
           </main>
-
-          {/* FOOTER */}
           <Footer />
         </ThemeProvider>
       </body>
